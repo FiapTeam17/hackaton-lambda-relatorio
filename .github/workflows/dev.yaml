@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./HackathonFiap.Lambda.Relatorio
+    working-directory: ./
 
 jobs:
   build:
