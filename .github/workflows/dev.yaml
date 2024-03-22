@@ -1,0 +1,36 @@
+name: .NET
+
+on:
+  push:
+    branches:
+      - dev  
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      region: us-east-2
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 8.0.x
+      - name: AWS CLI
+        run: dotnet tool install -g Amazon.Lambda.Tools
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore
+      - name: Deploy to Lambda
+        working-directory: ./
+        run: dotnet lambda deploy-serverless --region us-east-1 --s3-bucket hackatonfiap --function-name hackaton-lambda-relatorio
