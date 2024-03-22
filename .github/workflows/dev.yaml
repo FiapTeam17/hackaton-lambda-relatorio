@@ -33,4 +33,4 @@ jobs:
         run: dotnet build --no-restore
       - name: Deploy to Lambda
         working-directory: ./
-        run: dotnet lambda deploy-serverless --region us-east-1 --s3-bucket hackatonfiap --function-name hackaton-lambda-relatorio
+        run: dotnet lambda deploy-serverless --region us-east-2 --s3-bucket hackatonfiap --function-name hackaton-lambda-relatorio
