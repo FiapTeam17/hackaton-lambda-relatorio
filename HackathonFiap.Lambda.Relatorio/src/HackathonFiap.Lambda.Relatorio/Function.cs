@@ -37,13 +37,17 @@ public class Function
 
     private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
     {
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+
+        };
+        
         context.Logger.LogInformation($"Processed message {message.Body}");
-        var periodoDto = JsonSerializer.Deserialize<PeriodoDto>(message.Body);
+        var periodoDto = JsonSerializer.Deserialize<PeriodoDto>(message.Body, jsonSerializerOptions);
         context.Logger.LogInformation($"Ano {periodoDto.Ano}");
         context.Logger.LogInformation($"Mes {periodoDto.Mes}");
         // TODO: Do interesting work based on the new message
         await Task.CompletedTask;
     }
-    
-     
 }
