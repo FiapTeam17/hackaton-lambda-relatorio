@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 
@@ -37,8 +38,12 @@ public class Function
     private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
     {
         context.Logger.LogInformation($"Processed message {message.Body}");
-
+        var periodoDto = JsonSerializer.Deserialize<PeriodoDto>(message.Body);
+        context.Logger.LogInformation($"Ano {periodoDto.Ano}");
+        context.Logger.LogInformation($"Mes {periodoDto.Mes}");
         // TODO: Do interesting work based on the new message
         await Task.CompletedTask;
     }
+    
+     
 }

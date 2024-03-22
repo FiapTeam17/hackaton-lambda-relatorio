@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./
+    working-directory: ./HackathonFiap.Lambda.Relatorio
 
 jobs:
   build:
@@ -33,4 +33,5 @@ jobs:
         run: dotnet build --no-restore
       - name: Deploy to Lambda
         working-directory: ./
-        run: dotnet lambda deploy-serverless --region us-east-2 --s3-bucket hackatonfiap --function-name hackaton-lambda-relatorio
+        run: dotnet lambda deploy-function --region us-east-2 --function-name hackaton-lambda-relatorio
+  
