@@ -2,6 +2,7 @@ using System.Data.Common;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Amazon;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
@@ -21,7 +22,8 @@ namespace HackathonFiap.Lambda.Relatorio;
 
 public class Function
 {
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly JsonSerializerOptions _optionsDeserialize;
+    private readonly JsonSerializerOptions _optionsSerialize;
     private readonly DbConnection _connection;
     
     /// <summary>
@@ -31,10 +33,16 @@ public class Function
     /// </summary>
     public Function()
     {
-        _jsonSerializerOptions = new JsonSerializerOptions
+        _optionsSerialize = new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles
+        };
+        
+        _optionsDeserialize = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
-
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
         _connection = MontarConnectionOperacao();
@@ -63,7 +71,7 @@ public class Function
     private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
     {   
         context.Logger.LogInformation($"Processed message {message.Body}");
-        var periodoDto = JsonSerializer.Deserialize<PeriodoDto>(message.Body, _jsonSerializerOptions);
+        var periodoDto = JsonSerializer.Deserialize<PeriodoDto>(message.Body, _optionsDeserialize);
         
         await using var command = _connection.CreateCommand();
         
@@ -342,7 +350,7 @@ public class Function
         var sqsClient = new AmazonSQSClient(awsAccessKey, awsSecretKey, awsRegion);
 
         // Serializando o objeto em formato JSON
-        var mensagemJson = JsonSerializer.Serialize(solicitacaoEmail);
+        var mensagemJson = JsonSerializer.Serialize(solicitacaoEmail, _optionsSerialize);
 
         // URL da fila do SQS
         var queueUrl = "https://sqs.us-east-2.amazonaws.com/190197150713/enviar-email.fifo"; // Substitua pelo URL da sua fila
