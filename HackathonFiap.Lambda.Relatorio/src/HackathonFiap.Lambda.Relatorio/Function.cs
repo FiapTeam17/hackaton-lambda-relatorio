@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Amazon;
-using Amazon.Internal;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Lambda.SQSEvents;
@@ -269,7 +268,7 @@ public class Function
 
         await SolicitarRelatorio(solicitacaoEmail);
 
-        var caminho = await UpalodS3("hackatonfiap", periodoDto.RelatorioId.ToString(), html);
+        var caminho = await UpalodS3("hackatonfiap", $"{periodoDto.RelatorioId}.html", html);
         
         command.Parameters.Clear();
         command.CommandText = $"update solicitaPonto set Status = @status, CaminhoArquivo = @caminho where Id = @id";
