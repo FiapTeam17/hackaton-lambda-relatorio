@@ -88,7 +88,7 @@ public class Function
         await read.CloseAsync();
         
         command.Parameters.Clear();
-        command.CommandText = $"select p.Id, p.Horario, f.Nome, f.Email" +
+        command.CommandText = $"select p.Id, p.Horario" +
                               $" from ponto p " +
                               $" where p.FuncionarioId = @FuncionarioId and year(p.Horario) = @ano and month(p.Horario) = @mes" +
                               $" order by p.Horario";
