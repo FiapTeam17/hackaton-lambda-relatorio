@@ -93,6 +93,11 @@ public class Function
             });
         }
         await read.CloseAsync();
+
+        foreach (var ponto in listaPonto)
+        {
+            context.Logger.LogInformation($"Fucionario {ponto.FuncionarioId}, ponto {ponto.Horario:dd/MM/yyyy hh:mm:ss}");
+        }
     }
     
     private DbConnection MontarConnectionOperacao()
