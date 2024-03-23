@@ -191,7 +191,7 @@ public class Function
                    </html>
                    """;
 
-        html = html.Replace("[Periodo]", $"{periodoDto.Mes}/{periodoDto.Ano}");
+        html = html.Replace("[Periodo]", $"{periodoDto.Mes.ToString().PadLeft(2,'0')}/{periodoDto.Ano}");
         html = html.Replace("[NomeFuncionario]", nome);
         
         double totalHoras = 0;
@@ -207,29 +207,29 @@ public class Function
             {
                 if (diaAtual != 0)
                 {
-
                     TimeSpan primeiroTurno = TimeSpan.Zero;
                     if (entrada1.HasValue && saida1.HasValue)
                     {
-                        primeiroTurno = (DateTime)entrada1 - (DateTime)saida1;
+                        primeiroTurno = (DateTime)saida1- (DateTime)entrada1;
                     }
                     
                     TimeSpan segundoTurno = TimeSpan.Zero;
                     if (entrada2.HasValue && saida2.HasValue)
                     {
-                        segundoTurno = (DateTime)entrada2 - (DateTime)saida2;
+                        segundoTurno = (DateTime)saida2 - (DateTime)entrada2;
                     }
-                    var totalDia = primeiroTurno.TotalHours + segundoTurno.Hours;
+                    var totalDia = Math.Round(primeiroTurno.TotalHours + segundoTurno.Hours, 0);
+            
                     totalHoras += totalDia;
                     
                     var linha = $"""
                                  <tr>
-                                   <td>{ponto.Horario:dd/MM/yyyy}</td>
+                                   <td>{entrada1:dd/MM/yyyy}</td>
                                    <td>{entrada1:HH:mm:ss}</td>
                                    <td>{saida1:HH:mm:ss}</td>
                                    <td>{entrada2:HH:mm:ss}</td>
                                    <td>{saida2:HH:mm:ss}</td>
-                                   <td>{totalHoras} horas</td>
+                                   <td>{totalDia} horas</td>
                                  </tr>
                                  """;
                     sb.Append(linha);
@@ -255,6 +255,36 @@ public class Function
                 saida2 = ponto.Horario;
             }
         }
+
+        if (listaPonto.Count != 0)
+        {
+            TimeSpan primeiroTurno = TimeSpan.Zero;
+            if (entrada1.HasValue && saida1.HasValue)
+            {
+                primeiroTurno = (DateTime)saida1- (DateTime)entrada1;
+            }
+                    
+            TimeSpan segundoTurno = TimeSpan.Zero;
+            if (entrada2.HasValue && saida2.HasValue)
+            {
+                segundoTurno = (DateTime)saida2 - (DateTime)entrada2;
+            }
+            var totalDia = Math.Round(primeiroTurno.TotalHours + segundoTurno.Hours, 0);
+            
+            totalHoras += totalDia;
+                    
+            var linha = $"""
+                         <tr>
+                           <td>{entrada1:dd/MM/yyyy}</td>
+                           <td>{entrada1:HH:mm:ss}</td>
+                           <td>{saida1:HH:mm:ss}</td>
+                           <td>{entrada2:HH:mm:ss}</td>
+                           <td>{saida2:HH:mm:ss}</td>
+                           <td>{totalDia} horas</td>
+                         </tr>
+                         """;
+            sb.Append(linha);
+        }
         
         html = html.Replace("[Linhas]", sb.ToString());
         html = html.Replace("[Total Horas]", totalHoras.ToString(CultureInfo.InvariantCulture));
@@ -262,7 +292,7 @@ public class Function
         var solicitacaoEmail = new SolicitacaoEmail
         {
             To = email,
-            Subject = $"Registro de Ponto {periodoDto.Mes}/{periodoDto.Ano}",
+            Subject = $"Registro de Ponto {periodoDto.Mes.ToString().PadLeft(2,'0')}/{periodoDto.Ano}",
             Html = html
         };
 
