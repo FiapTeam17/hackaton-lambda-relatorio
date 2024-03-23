@@ -85,6 +85,7 @@ public class Function
             nome = read.GetString(0);
             email = read.GetString(1);
         }
+        await read.CloseAsync();
         
         command.Parameters.Clear();
         command.CommandText = $"select p.Id, p.Horario, f.Nome, f.Email" +
