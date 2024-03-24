@@ -57,15 +57,20 @@ public class Function
     /// <param name="context">The ILambdaContext that provides methods for logging and describing the Lambda environment.</param>
     /// <returns></returns>
     public async Task FunctionHandler(SQSEvent evnt, ILambdaContext context)
-    {   
-        await _connection.OpenAsync();
-        
-        foreach (var message in evnt.Records)
+    {
+        try
         {
-            await ProcessMessageAsync(message, context);
+            await _connection.OpenAsync();
+        
+            foreach (var message in evnt.Records)
+            {
+                await ProcessMessageAsync(message, context);
+            }
         }
-
-        await _connection.CloseAsync();
+        finally
+        {
+            await _connection.CloseAsync();
+        }
     }
 
     private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
